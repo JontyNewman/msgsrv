@@ -10,10 +10,10 @@ import (
 )
 
 type AddMessageHandler struct {
-	add func(string) uint
+	add func(string) (uint, error)
 }
 
-func NewAddMessageHandler(add func(string) uint) AddMessageHandler {
+func NewAddMessageHandler(add func(string) (uint, error)) AddMessageHandler {
 	return AddMessageHandler{add: add}
 }
 
@@ -27,7 +27,13 @@ func (h *AddMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) 
 		return
 	}
 
-	id := h.add(string(body))
+	id, err := h.add(string(body))
+
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	json, err := json.Marshal(struct {
 		Id uint `json:"id"`
@@ -44,10 +50,10 @@ func (h *AddMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) 
 }
 
 type FetchMessageHandler struct {
-	fetch func(uint) (string, bool)
+	fetch func(uint) (string, bool, error)
 }
 
-func NewFetchMessageHandler(fetch func(uint) (string, bool)) FetchMessageHandler {
+func NewFetchMessageHandler(fetch func(uint) (string, bool, error)) FetchMessageHandler {
 	return FetchMessageHandler{fetch: fetch}
 }
 
@@ -61,7 +67,12 @@ func (h *FetchMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request
 		return
 	}
 
-	message, found := h.fetch(uint(id))
+	message, found, err := h.fetch(uint(id))
+
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 
 	if !found {
 		w.WriteHeader(http.StatusNotFound)
