@@ -10,10 +10,13 @@ import (
 
 func main() {
 
-	repo := repo.RuntimeMessageRepository{}
+	repo := new(repo.RuntimeMessageRepository)
 
-	http.Handle("POST /messages/{$}", &h.AddMessageHandler{Repo: &repo})
-	http.Handle("GET /messages/{id}", &h.FetchMessageHandler{Repo: &repo})
+	add := h.NewAddMessageHandler(repo.Add)
+	fetch := h.NewFetchMessageHandler(repo.Fetch)
+
+	http.Handle("POST /messages/{$}", &add)
+	http.Handle("GET /messages/{id}", &fetch)
 
 	log.Fatal(http.ListenAndServe("", nil))
 }

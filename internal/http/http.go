@@ -4,15 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
+	"os"
 	"strconv"
-
-	"github.com/jontynewman/msgsrv/internal/repo"
 )
 
 type AddMessageHandler struct {
-	Repo repo.MessageRepository
+	add func(string) uint
+}
+
+func NewAddMessageHandler(add func(string) uint) AddMessageHandler {
+	return AddMessageHandler{add: add}
 }
 
 func (h *AddMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -20,19 +22,19 @@ func (h *AddMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) 
 	body, err := io.ReadAll(req.Body)
 
 	if err != nil {
-		fmt.Fprintln(log.Writer(), err)
+		fmt.Fprintln(os.Stderr, err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	id := h.Repo.Add(string(body))
+	id := h.add(string(body))
 
 	json, err := json.Marshal(struct {
 		Id uint `json:"id"`
 	}{Id: id})
 
 	if err != nil {
-		fmt.Fprintln(log.Writer(), err)
+		fmt.Fprintln(os.Stderr, err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -42,7 +44,11 @@ func (h *AddMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) 
 }
 
 type FetchMessageHandler struct {
-	Repo repo.MessageRepository
+	fetch func(uint) (string, bool)
+}
+
+func NewFetchMessageHandler(fetch func(uint) (string, bool)) FetchMessageHandler {
+	return FetchMessageHandler{fetch: fetch}
 }
 
 func (h *FetchMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
@@ -50,12 +56,12 @@ func (h *FetchMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request
 	id, err := strconv.Atoi(req.PathValue("id"))
 
 	if err != nil {
-		fmt.Fprintln(log.Writer(), err)
+		fmt.Fprintln(os.Stdout, err)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	message, found := h.Repo.Fetch(uint(id))
+	message, found := h.fetch(uint(id))
 
 	if !found {
 		w.WriteHeader(http.StatusNotFound)
