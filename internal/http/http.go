@@ -72,6 +72,7 @@ func (h *FetchMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	if !found {
