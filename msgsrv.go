@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"flag"
 	"fmt"
@@ -10,15 +11,17 @@ import (
 
 	h "github.com/jontynewman/msgsrv/internal/http"
 	"github.com/jontynewman/msgsrv/internal/repo"
+	r "github.com/jontynewman/msgsrv/internal/repo/redis"
 	s "github.com/jontynewman/msgsrv/internal/repo/sql"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/redis/go-redis/v9"
 )
 
 func main() {
 
 	addr := flag.String("addr", "", "The TCP network address to listen on.")
-	repoType := flag.String("repo", "", "The type of repository in which to store messages.\nOne of: sqlite, runtime")
-	source := flag.String("source", "", "The driver-specific data source name (for SQL-based repositories).")
+	repoType := flag.String("repo", "", "The type of repository in which to store messages.\nOne of: redis, runtime, sqlite")
+	source := flag.String("source", "", "The driver-specific data source name (for Redis and SQL repositories).")
 	flag.Parse()
 
 	repo, badUsage, err := initMessageRepository(*repoType, *source)
@@ -42,22 +45,42 @@ func main() {
 
 func initMessageRepository(repoType string, source string) (repo.MessageRepository, bool, error) {
 	switch repoType {
-	case "sqlite":
-		repo, err := initSqliteMessageRepository(source)
+	case "redis":
+		repo, err := initRedisMessageRepository(source)
 		if err != nil {
 			return nil, false, err
 		}
 		return repo, false, nil
 	case "runtime":
 		if source != "" {
-			warnFlagIsNotApplicable("source", "runtime")
+			return nil, true, toFlagIsNotApplicableError("source", "runtime")
 		}
 		return new(repo.RuntimeMessageRepository), false, nil
+	case "sqlite":
+		repo, err := initSqliteMessageRepository(source)
+		if err != nil {
+			return nil, false, err
+		}
+		return repo, false, nil
 	case "":
 		return nil, true, fmt.Errorf("no repo specified")
 	default:
-		return nil, true, fmt.Errorf("unknown repo \"%s\" specified", repoType)
+		return nil, true, fmt.Errorf("invalid repo \"%s\"", repoType)
 	}
+}
+
+func initRedisMessageRepository(url string) (*r.RedisMessageRepository, error) {
+
+	opts, err := redis.ParseURL(url)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx := context.Background()
+	client := redis.NewClient(opts)
+	repo := r.NewRedisMessageRepository(ctx, client)
+
+	return &repo, nil
 }
 
 func initSqliteMessageRepository(source string) (*s.SqlMessageRepository, error) {
@@ -71,8 +94,8 @@ func initSqliteMessageRepository(source string) (*s.SqlMessageRepository, error)
 	return s.InitSqliteMessageRepository(db)
 }
 
-func warnFlagIsNotApplicable(flag string, repoType string) {
-	fmt.Fprintf(os.Stderr, "%s specified, but is not applicable to the current repo (%s)\n", flag, repoType)
+func toFlagIsNotApplicableError(flag string, repoType string) error {
+	return fmt.Errorf("%s specified, but is not applicable to the current repo (%s)", flag, repoType)
 }
 
 func reportBadUsageAndExit(err error) {
