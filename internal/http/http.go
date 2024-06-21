@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
-	"os"
 	"strconv"
 )
 
@@ -22,7 +22,7 @@ func (h *AddMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) 
 	body, err := io.ReadAll(req.Body)
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -30,7 +30,7 @@ func (h *AddMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) 
 	id, err := h.add(string(body))
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -40,7 +40,7 @@ func (h *AddMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) 
 	}{Id: id})
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -62,7 +62,7 @@ func (h *FetchMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request
 	id, err := strconv.Atoi(req.PathValue("id"))
 
 	if err != nil {
-		fmt.Fprintln(os.Stdout, err)
+		log.Println(err)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -70,7 +70,7 @@ func (h *FetchMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request
 	message, found, err := h.fetch(uint(id))
 
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
