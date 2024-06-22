@@ -1,0 +1,8 @@
+services:
+  msgsrv:
+    build: .
+    ports: 
+      - 80:80
+    command: msgsrv -addr= -repo=redis -source=redis://redis:6379/0?protocol=3
+  redis:
+    image: redis:7.2.5

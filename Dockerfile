@@ -4,8 +4,10 @@ FROM golang:1.22.4
 
 WORKDIR /usr/src/msgsrv
 
-COPY . .
+COPY **/go.mod **/go.sum internal/**/go.mod internal/**/go.sum ./
 RUN go mod download && go mod verify
+
+COPY . .
 
 RUN go build -o /usr/local/bin/msgsrv
 
