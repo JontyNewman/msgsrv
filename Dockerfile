@@ -9,8 +9,10 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-RUN go build -o /usr/local/bin/msgsrv
+WORKDIR /usr/src/msgsrv/cmd/msgsrv-redis
+
+RUN go build -o /usr/local/bin/msgsrv-redis
 
 EXPOSE 80
 
-CMD ["msgsrv"]
+CMD ["msgsrv-redis"]

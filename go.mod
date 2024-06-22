@@ -4,11 +4,10 @@ require internal/http v0.1.0
 
 require internal/repo v0.1.0
 
-require internal/repo/redis v0.1.0
-
 require (
 	github.com/mattn/go-sqlite3 v1.14.22
 	github.com/redis/go-redis/v9 v9.5.3
+	internal/repo/redis v0.1.0
 )
 
 require (
