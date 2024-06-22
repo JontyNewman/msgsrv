@@ -50,5 +50,4 @@ func (repo *RedisMessageRepository) Fetch(id uint) (string, bool, error) {
 	}
 
 	return message, true, nil
-
 }

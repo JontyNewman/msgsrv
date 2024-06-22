@@ -1,4 +1,4 @@
-module github.com/jontynewman/msgsrv/internal/repo/redis
+module redis
 
 go 1.22.4
 

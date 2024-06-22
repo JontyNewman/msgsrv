@@ -9,10 +9,11 @@ import (
 	"net/http"
 	"os"
 
-	h "github.com/jontynewman/msgsrv/internal/http"
-	"github.com/jontynewman/msgsrv/internal/repo"
-	r "github.com/jontynewman/msgsrv/internal/repo/redis"
-	s "github.com/jontynewman/msgsrv/internal/repo/sql"
+	h "internal/http"
+	"internal/repo"
+	r "internal/repo/redis"
+	s "internal/repo/sql"
+
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/redis/go-redis/v9"
 )

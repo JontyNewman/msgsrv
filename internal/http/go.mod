@@ -1,3 +1,3 @@
-module github.com/jontynewman/msgsrv/internal/http
+module http
 
 go 1.22.4
