@@ -4,7 +4,7 @@
         <meta name="viewport" content="width=device-width">
     </head>
     <body>
-        <header>
+        <header class="visually-hidden">
             <h1>Message Service (msgsrv)</h1>
         </header>
         <main>
@@ -16,7 +16,7 @@
             <form method="post">
                 <p>
                     <label for="message">Message</label><br />
-                    <textarea id="message" name="message" rows="12">{{ .Body }}</textarea>
+                    <textarea id="message" name="message" rows="4">{{ .Body }}</textarea>
                 </p>
                 <input type="submit" value="Add message">
             </form>
@@ -58,6 +58,16 @@
             border-style: none;
             color: white;
             padding: 0.5em;
+        }
+
+        .visually-hidden:not(:focus):not(:active) {
+            clip: rect(0 0 0 0);
+            clip-path: inset(50%);
+            height: 1px;
+            overflow: hidden;
+            position: absolute;
+            white-space: nowrap;
+            width: 1px;
         }
         </style>
     </body>
