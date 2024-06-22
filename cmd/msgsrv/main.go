@@ -16,7 +16,7 @@ func main() {
 	len := len(args)
 
 	if len > max {
-		log.Fatalf("expected no more than %d command-line argument but got %d", max, len)
+		log.Fatalf("expected no more than %d command-line argument (the TCP network address for this service to listen on) but got %d", max, len)
 	}
 
 	addr := ""

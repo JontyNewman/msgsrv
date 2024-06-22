@@ -36,8 +36,8 @@ func (h *AddMessageHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) 
 	}
 
 	json, err := json.Marshal(struct {
-		Id uint `json:"id"`
-	}{Id: id})
+		ID uint `json:"id"`
+	}{ID: id})
 
 	if err != nil {
 		log.Println(err)

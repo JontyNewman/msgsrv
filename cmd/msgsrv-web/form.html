@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+    <head>
+        <title>Message Service (msgsrv)</title>
+        <meta name="viewport" content="width=device-width">
+    </head>
+    <body>
+        <header>
+            <h1>Message Service (msgsrv)</h1>
+        </header>
+        <main>
+            {{ if .ID }}
+                <p>
+                    <a href="./{{.ID}}">Message {{.ID}}</a> has been added.
+                </p>
+            {{ end }}
+            <form method="post">
+                <p>
+                    <label for="message">Message</label><br />
+                    <textarea id="message" name="message" rows="12">{{ .Body }}</textarea>
+                </p>
+                <input type="submit" value="Add message">
+            </form>
+        </main>
+        <style>
+            * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #eeeeee;
+            color: #222222;
+            font-family: Georgia;
+            font-size: larger;
+            line-height: 1.75;
+            margin: 1.5rem;
+            word-spacing: 0.1em;
+        }
+
+        body > * > * {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 48rem;
+        }
+
+        input,
+        textarea {
+            font-size: 1rem;
+        }
+
+        textarea {
+            max-width: 36rem;
+            width: 100%;
+        }
+
+        input[type=submit] {
+            background-color: green;
+            border-radius: 0.25em;
+            border-style: none;
+            color: white;
+            padding: 0.5em;
+        }
+        </style>
+    </body>
+</html>
