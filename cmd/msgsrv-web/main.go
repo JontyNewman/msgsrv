@@ -18,7 +18,8 @@ type Message struct {
 func main() {
 
 	addr := flag.String("addr", ":8080", "The TCP network address for this service to listen on.")
-	baseAddress := flag.String("repo", "http://localhost:80/messages/", "The base TCP network address of the repository.")
+	baseAddress := flag.String("repo", "http://localhost:80/messages/", "The base address of the repository.")
+	flag.Parse()
 
 	repo := r.InitHttpMessageRepository(*baseAddress)
 	tmpl := template.Must(template.ParseFiles("form.html"))
