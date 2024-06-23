@@ -3,7 +3,7 @@
 For the Good Growth technical test, I have developed a simple web service which allows users to store and retrieve plain text
 messages. I have chosen to use Go in order to implement it.
 
-The overview for non-technical audiences is provided as a video.
+An overview for non-technical audiences is provided as a [video](https://raw.githubusercontent.com/JontyNewman/msgsrv/v0.1.0/overview.mp4).
 
 ## Quickstart
 
